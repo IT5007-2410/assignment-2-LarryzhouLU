@@ -139,7 +139,8 @@ class TicketToRide extends React.Component {
 		{/*Q3. Code to call component that Displays Travellers.*/}
 		
 		{/*Q4. Code to call the component that adds a traveller.*/}
-		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/}
+		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/
+    /**test1*/}
 	</div>
       </div>
     );
