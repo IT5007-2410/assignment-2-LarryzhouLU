@@ -8,6 +8,8 @@ const initialTravellers = [
     id: 2, name: 'Rose', phone: 88884444,
     bookingTime: new Date(),
   },
+  { id: 3, name: 'Pony', phone: '80847052', bookingTime: new Date() },
+  { id: 4, name: 'Mike', phone: '88884444', bookingTime: new Date() },
 ];
 
 
@@ -89,6 +91,7 @@ class Delete extends React.Component {
 class Homepage extends React.Component {
 	constructor() {
 	super();
+  
 	}
 	render(){
 	return (
@@ -100,6 +103,7 @@ class Homepage extends React.Component {
 class TicketToRide extends React.Component {
   constructor() {
     super();
+    //Create a state variable to store the travellers.
     this.state = { travellers: [], selector: 1};
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
@@ -107,7 +111,8 @@ class TicketToRide extends React.Component {
 
   setSelector(value)
   {
-  	/*Q2. Function to set the value of component selector variable based on user's button click.*/
+  /*Q2. Function to set the value of component selector variable based on user's button click.*/
+  this.setState({ selector: value });
   }
   componentDidMount() {
     this.loadData();
@@ -127,20 +132,28 @@ class TicketToRide extends React.Component {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
   }
   render() {
+    const { selector } = this.state; // 从状态中获取 selector
     return (
       <div>
         <h1>Ticket To Ride</h1>
 	<div>
 	    {/*Q2. Code for Navigation bar. Use basic buttons to create a nav bar. Use states to manage selection.*/}
+      <button onClick={() => this.setSelector(1)}>Homepage</button>
+      <button onClick={() => this.setSelector(2)}>Display Travellers</button>
+      <button onClick={() => this.setSelector(3)}>Add Traveller</button>
+      <button onClick={() => this.setSelector(4)}>Delete Traveller</button>
 	</div>
 	<div>
 		{/*Only one of the below four divisions is rendered based on the button clicked by the user.*/}
 		{/*Q2 and Q6. Code to call Instance that draws Homepage. Homepage shows Visual Representation of free seats.*/}
 		{/*Q3. Code to call component that Displays Travellers.*/}
-		
 		{/*Q4. Code to call the component that adds a traveller.*/}
 		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/
     /**test1*/}
+    {selector === 1 && <Homepage />}
+    {selector === 2 && <Display travellers={this.state.travellers} />}
+    {selector === 3 && <Add />}
+    {selector === 4 && <Delete />}
 	</div>
       </div>
     );
