@@ -15,15 +15,20 @@ const initialTravellers = [
 
 function TravellerRow(props) {
   {/*Q3. Placeholder to initialize local variable based on traveller prop.*/}
+  const { traveller } = props;
   return (
     <tr>
 	  {/*Q3. Placeholder for rendering one row of a table with required traveller attribute values.*/}
+    <td>{traveller.id}</td>
+    <td>{traveller.name}</td>
+    <td>{traveller.phone}</td>
+    <td>{traveller.bookingTime.toLocaleString()}</td>
     </tr>
   );
 }
 
 function Display(props) {
-  
+  const { travellers } = props;
 	/*Q3. Write code to render rows of table, reach corresponding to one traveller. Make use of the TravellerRow function that draws one row.*/
 
   return (
@@ -39,6 +44,9 @@ function Display(props) {
       </thead>
       <tbody>
         {/*Q3. write code to call the JS variable defined at the top of this function to render table rows.*/}
+        {travellers.map((traveller) => (
+          <TravellerRow key={traveller.id} traveller={traveller} />
+        ))}
       </tbody>
     </table>
   );
@@ -111,8 +119,8 @@ class TicketToRide extends React.Component {
 
   setSelector(value)
   {
-  /*Q2. Function to set the value of component selector variable based on user's button click.*/
-  this.setState({ selector: value });
+    /*Q2. Function to set the value of component selector variable based on user's button click.*/
+    this.setState({ selector: value });
   }
   componentDidMount() {
     this.loadData();
