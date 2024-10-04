@@ -12,6 +12,10 @@ const initialTravellers = [
   { id: 4, name: 'Mike', phone: '88884444', bookingTime: new Date() },
 ];
 
+// count nextId based on the initialTravellers
+const maxId = initialTravellers.reduce((maxId, traveller) => {
+  return Math.max(maxId, traveller.id);
+}, 0);
 
 function TravellerRow(props) {
   {/*Q3. Placeholder to initialize local variable based on traveller prop.*/}
@@ -55,19 +59,56 @@ function Display(props) {
 class Add extends React.Component {
   constructor() {
     super();
+    this.state = {
+      name: '',
+      phone: ''
+    };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handlePhoneChange = this.handlePhoneChange.bind(this);
+  }
+
+  handleNameChange(e) {
+    this.setState({ name: e.target.value });
+  }
+
+  handlePhoneChange(e) {
+    this.setState({ phone: e.target.value });
   }
 
   handleSubmit(e) {
     e.preventDefault();
     /*Q4. Fetch the passenger details from the add form and call bookTraveller()*/
+    const { name, phone } = this.state;
+
+  //if it is empty
+  if (!name || !phone) {
+    alert('Please fill in all the fields.');
+    return;
+  }
+
+  //if it is not a number
+  if (isNaN(phone)) {
+    alert('Phone number must be a number.');
+    return;
+  }
+
+    const passenger = {
+      id: this.props.getNextId(), // use the function provided by the parent component to get the next ID
+      name,
+      phone,
+      bookingTime: new Date()
+    };
+    this.props.bookTraveller(passenger);
+    this.setState({ name: '', phone: '' }); // clear the form
   }
 
   render() {
     return (
       <form name="addTraveller" onSubmit={this.handleSubmit}>
 	    {/*Q4. Placeholder to enter passenger details. Below code is just an example.*/}
-        <input type="text" name="travellername" placeholder="Name" />
+      <input type="text" name="travellername" placeholder="Name" value={this.state.name} onChange={this.handleNameChange} />
+        <input type="text" name="travellerphone" placeholder="Phone" value={this.state.phone} onChange={this.handlePhoneChange} />
         <button>Add</button>
       </form>
     );
@@ -76,21 +117,40 @@ class Add extends React.Component {
 
 
 class Delete extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  handleChange(e) {
+    this.setState({ name: e.target.value });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     /*Q5. Fetch the passenger details from the deletion form and call deleteTraveller()*/
+    this.props.deleteTraveller(this.state.name);
+    // clear the form
+    this.setState({ name: '' });
   }
+  
 
   render() {
     return (
       <form name="deleteTraveller" onSubmit={this.handleSubmit}>
 	    {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
-	<input type="text" name="travellername" placeholder="Name" />
-        <button>Delete</button>
+      <input
+          type="text"
+          name="travellername"
+          placeholder="Enter name to delete"
+          value={this.state.name}
+          onChange={this.handleChange}
+        />
+        <button type="submit">Delete</button>
       </form>
     );
   }
@@ -112,9 +172,16 @@ class TicketToRide extends React.Component {
   constructor() {
     super();
     //Create a state variable to store the travellers.
-    this.state = { travellers: [], selector: 1};
+    this.state = { travellers: [], selector: 1, nextId: maxId + 1 };
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
+    this.getNextId = this.getNextId.bind(this);
+  }
+
+  getNextId() {
+    const { nextId } = this.state;
+    this.setState({ nextId: nextId + 1 });
+    return nextId;
   }
 
   setSelector(value)
@@ -134,13 +201,36 @@ class TicketToRide extends React.Component {
 
   bookTraveller(passenger) {
 	    /*Q4. Write code to add a passenger to the traveller state variable.*/
+      var that = this; // use that to refer to this inside the callback function
+      this.setState(function(prevState) {
+        // use concat to add a new passenger to the array
+        return {
+          travellers: prevState.travellers.concat(passenger)
+        };
+      });
   }
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
+    console.log("delete:" ,passenger);
+    var travellerExists = this.state.travellers.some(function(traveller) {
+      return traveller.name === passenger;
+    });
+
+    if (travellerExists) {
+      this.setState(function(prevState) {
+        return {
+          travellers: prevState.travellers.filter(function(traveller) {
+            return traveller.name !== passenger;
+          })
+        };
+      });
+    } else {
+      alert('Traveller not found!');
+    }
   }
   render() {
-    const { selector } = this.state; // 从状态中获取 selector
+    const { selector } = this.state; // get selector
     return (
       <div>
         <h1>Ticket To Ride</h1>
@@ -160,8 +250,8 @@ class TicketToRide extends React.Component {
     /**test1*/}
     {selector === 1 && <Homepage />}
     {selector === 2 && <Display travellers={this.state.travellers} />}
-    {selector === 3 && <Add />}
-    {selector === 4 && <Delete />}
+    {selector === 3 &&  <Add bookTraveller={this.bookTraveller} getNextId={this.getNextId} />}
+    {selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
 	</div>
       </div>
     );
