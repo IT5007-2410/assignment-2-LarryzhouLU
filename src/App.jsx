@@ -133,7 +133,7 @@ class Delete extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     /*Q5. Fetch the passenger details from the deletion form and call deleteTraveller()*/
-    this.props.deleteTraveller(this.state.name);
+    this.props.deleteTraveller(this.state.name); // 
     // clear the form
     this.setState({ name: '' });
   }
@@ -157,22 +157,48 @@ class Delete extends React.Component {
 }
 
 class Homepage extends React.Component {
-	constructor() {
-	super();
-  
+	constructor(props) {
+    super(props);
+    this.state = {
+      freeSeats: props.freeSeats || [], //
+    };
 	}
 	render(){
-	return (
-	<div>
-		{/*Q2. Placeholder for Homepage code that shows free seats visually.*/}
-	</div>);
+    const { freeSeats } = this.props;
+    const seatArray = Array.from({ length: 10 }, (_, index) => index + 1);
+    const seats = seatArray.map(seat => (
+      <div
+        key={seat}
+        style={{
+          backgroundColor: freeSeats.includes(seat) ? 'green' : 'grey',
+          width: '30px',
+          height: '30px',
+          display: 'inline-block',
+          margin: '5px'
+        }}
+      >
+        {seat}
+      </div>
+    ));
+
+    return (
+      <div>
+        <h2>Seat Availability</h2>
+        {seats}
+      </div>
+    );
 	}
 }
 class TicketToRide extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     //Create a state variable to store the travellers.
-    this.state = { travellers: [], selector: 1, nextId: maxId + 1 };
+    this.state = { 
+      travellers: [], selector: 1, nextId: maxId + 1,
+      freeSeats: Array.from({ length: 10 }, (_, index) => index + 1),
+      availableIds: []
+     };
+
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
     this.getNextId = this.getNextId.bind(this);
@@ -194,41 +220,54 @@ class TicketToRide extends React.Component {
   }
 
   loadData() {
+    const allSeats = Array.from({ length: 10 }, (_, index) => index + 1); // 假设有10个座位
+    const occupiedSeats = initialTravellers.map(traveller => traveller.id);
+    const freeSeats = allSeats.filter(seat => !occupiedSeats.includes(seat));
     setTimeout(() => {
-      this.setState({ travellers: initialTravellers });
+      this.setState({ 
+        travellers: initialTravellers,
+        freeSeats: freeSeats 
+      });
     }, 500);
   }
 
   bookTraveller(passenger) {
-	    /*Q4. Write code to add a passenger to the traveller state variable.*/
-      var that = this; // use that to refer to this inside the callback function
-      this.setState(function(prevState) {
-        // use concat to add a new passenger to the array
-        return {
-          travellers: prevState.travellers.concat(passenger)
-        };
-      });
+    if (this.state.freeSeats.length === 0) {
+      alert('Already full!');
+      return;
+    }
+    const nextId = this.getNextId();
+    const newPassenger = {
+      ...passenger,
+      id: nextId
+    };
+
+    const { seat } = passenger;
+    this.setState(prevState => ({
+      travellers: [...prevState.travellers, newPassenger],
+      freeSeats: prevState.freeSeats.filter(seat => seat !== nextId)
+    }));
   }
 
   deleteTraveller(passenger) {
 	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
-    console.log("delete:" ,passenger);
-    var travellerExists = this.state.travellers.some(function(traveller) {
-      return traveller.name === passenger;
-    });
-
-    if (travellerExists) {
-      this.setState(function(prevState) {
+    //console.log("delete:" ,passenger);
+    this.setState(prevState => {
+      const travellerIndex = prevState.travellers.findIndex(traveller => traveller.name === passenger);
+      if (travellerIndex !== -1) {
+        const traveller = prevState.travellers[travellerIndex];
         return {
-          travellers: prevState.travellers.filter(function(traveller) {
-            return traveller.name !== passenger;
-          })
+          travellers: prevState.travellers.filter(traveller => traveller.name !== passenger),
+          freeSeats: [...prevState.freeSeats, traveller.id], // 添加被释放的座位
+          availableIds: [...prevState.availableIds, traveller.id] // 添加到可用 id 池
         };
-      });
-    } else {
+      }
       alert('Traveller not found!');
-    }
+      return null; // 如果没有找到旅客，不更新状态
+    });
   }
+
+
   render() {
     const { selector } = this.state; // get selector
     return (
@@ -248,7 +287,7 @@ class TicketToRide extends React.Component {
 		{/*Q4. Code to call the component that adds a traveller.*/}
 		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/
     /**test1*/}
-    {selector === 1 && <Homepage />}
+    {selector === 1 && <Homepage freeSeats={this.state.freeSeats} />}
     {selector === 2 && <Display travellers={this.state.travellers} />}
     {selector === 3 &&  <Add bookTraveller={this.bookTraveller} getNextId={this.getNextId} />}
     {selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
