@@ -1,4 +1,4 @@
-/*Q1. JS Variable needs to be created here. Below variable is just an example. Try to add more attributes.*/
+// Q1. JS Variable needs to be created here. Below variable is just an example. Try to add more attributes.
 const initialTravellers = [
   {
     id: 1, name: 'Jack', phone: 88885555,
@@ -18,28 +18,27 @@ const maxId = initialTravellers.reduce((maxId, traveller) => {
 }, 0);
 
 function TravellerRow(props) {
-  {/*Q3. Placeholder to initialize local variable based on traveller prop.*/}
+  // Q3. Placeholder to initialize local variable based on traveller prop.
   const { traveller } = props;
   return (
     <tr>
-	  {/*Q3. Placeholder for rendering one row of a table with required traveller attribute values.*/}
-    <td>{traveller.id}</td>
-    <td>{traveller.name}</td>
-    <td>{traveller.phone}</td>
-    <td>{traveller.bookingTime.toLocaleString()}</td>
+      {/*  Q3. Placeholder for rendering one row of a table with required traveller attribute values.*/}
+      <td>{traveller.id}</td>
+      <td>{traveller.name}</td>
+      <td>{traveller.phone}</td>
+      <td>{traveller.bookingTime.toLocaleString()}</td>
     </tr>
   );
 }
 
 function Display(props) {
   const { travellers } = props;
-	/*Q3. Write code to render rows of table, reach corresponding to one traveller. Make use of the TravellerRow function that draws one row.*/
-
+  // Q3. Write code to render rows of table, reach corresponding to one traveller. Make use of the TravellerRow function that draws one row.
   return (
     <table className="bordered-table">
       <thead>
         <tr>
-	  {/*Q3. Below table is just an example. Add more columns based on the traveller attributes you choose.*/}
+         {/* Q3. Below table is just an example. Add more columns based on the traveller attributes you choose.*/}
           <th>ID</th>
           <th>Name</th>
           <th>Phone</th>
@@ -78,20 +77,20 @@ class Add extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    /*Q4. Fetch the passenger details from the add form and call bookTraveller()*/
+    // Q4. Fetch the passenger details from the add form and call bookTraveller()
     const { name, phone } = this.state;
 
-  //if it is empty
-  if (!name || !phone) {
-    alert('Please fill in all the fields.');
-    return;
-  }
+    // if it is empty
+    if (!name || !phone) {
+      alert('Please fill in all the fields.');
+      return;
+    }
 
-  //if it is not a number
-  if (isNaN(phone)) {
-    alert('Phone number must be a number.');
-    return;
-  }
+    // if it is not a number
+    if (isNaN(phone)) {
+      alert('Phone number must be a number.');
+      return;
+    }
 
     const passenger = {
       id: this.props.getNextId(), // use the function provided by the parent component to get the next ID
@@ -106,15 +105,14 @@ class Add extends React.Component {
   render() {
     return (
       <form name="addTraveller" onSubmit={this.handleSubmit}>
-	    {/*Q4. Placeholder to enter passenger details. Below code is just an example.*/}
-      <input type="text" name="travellername" placeholder="Name" value={this.state.name} onChange={this.handleNameChange} />
+        {/* Q4. Placeholder to enter passenger details. Below code is just an example.*/}
+        <input type="text" name="travellername" placeholder="Name" value={this.state.name} onChange={this.handleNameChange} />
         <input type="text" name="travellerphone" placeholder="Phone" value={this.state.phone} onChange={this.handlePhoneChange} />
         <button>Add</button>
       </form>
     );
   }
 }
-
 
 class Delete extends React.Component {
   constructor(props) {
@@ -132,18 +130,17 @@ class Delete extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    /*Q5. Fetch the passenger details from the deletion form and call deleteTraveller()*/
+    // Q5. Fetch the passenger details from the deletion form and call deleteTraveller()
     this.props.deleteTraveller(this.state.name); // 
     // clear the form
     this.setState({ name: '' });
   }
-  
 
   render() {
     return (
       <form name="deleteTraveller" onSubmit={this.handleSubmit}>
-	    {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
-      <input
+        {/* Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
+        <input
           type="text"
           name="travellername"
           placeholder="Enter name to delete"
@@ -157,13 +154,13 @@ class Delete extends React.Component {
 }
 
 class Homepage extends React.Component {
-	constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       freeSeats: props.freeSeats || [], //
     };
-	}
-	render(){
+  }
+  render(){
     const { freeSeats } = this.props;
     const seatArray = Array.from({ length: 10 }, (_, index) => index + 1);
     const seats = seatArray.map(seat => (
@@ -187,18 +184,22 @@ class Homepage extends React.Component {
         {seats}
       </div>
     );
-	}
+  }
 }
+
 class TicketToRide extends React.Component {
   constructor(props) {
     super(props);
-    //Create a state variable to store the travellers.
+    // Create a state variable to store the travellers.
     this.state = { 
-      travellers: [], selector: 1, nextId: maxId + 1,
-      freeSeats: Array.from({ length: 10 }, (_, index) => index + 1),
-      availableIds: []
+      travellers: [], // Array to hold traveller objects
+      selector: 1, // Selector for which component to display
+      nextId: maxId + 1, // Next available ID for new travellers
+      freeSeats: Array.from({ length: 10 }, (_, index) => index + 1), // Array of free seat IDs
+      availableIds: [] // Array to hold available seat IDs (not used in current implementation)
      };
 
+    // Bind class methods to this context
     this.bookTraveller = this.bookTraveller.bind(this);
     this.deleteTraveller = this.deleteTraveller.bind(this);
     this.getNextId = this.getNextId.bind(this);
@@ -210,9 +211,8 @@ class TicketToRide extends React.Component {
     return nextId;
   }
 
-  setSelector(value)
-  {
-    /*Q2. Function to set the value of component selector variable based on user's button click.*/
+  setSelector(value) {
+    // Function to set the value of component selector variable based on user's button click.
     this.setState({ selector: value });
   }
   componentDidMount() {
@@ -220,7 +220,8 @@ class TicketToRide extends React.Component {
   }
 
   loadData() {
-    const allSeats = Array.from({ length: 10 }, (_, index) => index + 1); // 假设有10个座位
+    // Initialize free seats based on initialTravellers data
+    const allSeats = Array.from({ length: 10 }, (_, index) => index + 1); 
     const occupiedSeats = initialTravellers.map(traveller => traveller.id);
     const freeSeats = allSeats.filter(seat => !occupiedSeats.includes(seat));
     setTimeout(() => {
@@ -232,66 +233,59 @@ class TicketToRide extends React.Component {
   }
 
   bookTraveller(passenger) {
+    // Function to add a new traveller to the state
     if (this.state.freeSeats.length === 0) {
       alert('Already full!');
       return;
     }
-    const nextId = this.getNextId();
+    const nextId = this.state.freeSeats[0];
     const newPassenger = {
       ...passenger,
-      id: nextId
+      id: nextId,
+      bookingTime: new Date()
     };
 
-    const { seat } = passenger;
     this.setState(prevState => ({
       travellers: [...prevState.travellers, newPassenger],
-      freeSeats: prevState.freeSeats.filter(seat => seat !== nextId)
+      freeSeats: prevState.freeSeats.filter(seat => seat !== nextId) // 
     }));
   }
 
-  deleteTraveller(passenger) {
-	  /*Q5. Write code to delete a passenger from the traveller state variable.*/
-    //console.log("delete:" ,passenger);
+  deleteTraveller(passengerName) {
+    // Function to delete a traveller from the state based on name
     this.setState(prevState => {
-      const travellerIndex = prevState.travellers.findIndex(traveller => traveller.name === passenger);
+      const travellerIndex = prevState.travellers.findIndex(traveller => traveller.name === passengerName);
       if (travellerIndex !== -1) {
         const traveller = prevState.travellers[travellerIndex];
         return {
-          travellers: prevState.travellers.filter(traveller => traveller.name !== passenger),
-          freeSeats: [...prevState.freeSeats, traveller.id], // 添加被释放的座位
-          availableIds: [...prevState.availableIds, traveller.id] // 添加到可用 id 池
+          travellers: prevState.travellers.filter(traveller => traveller.name !== passengerName),
+          freeSeats: [...prevState.freeSeats, traveller.id] //
         };
       }
       alert('Traveller not found!');
-      return null; // 如果没有找到旅客，不更新状态
+      return null; // 
     });
   }
 
-
   render() {
-    const { selector } = this.state; // get selector
+    const { selector } = this.state; // Get the current selector value
     return (
       <div>
         <h1>Ticket To Ride</h1>
-	<div>
-	    {/*Q2. Code for Navigation bar. Use basic buttons to create a nav bar. Use states to manage selection.*/}
-      <button onClick={() => this.setSelector(1)}>Homepage</button>
-      <button onClick={() => this.setSelector(2)}>Display Travellers</button>
-      <button onClick={() => this.setSelector(3)}>Add Traveller</button>
-      <button onClick={() => this.setSelector(4)}>Delete Traveller</button>
-	</div>
-	<div>
-		{/*Only one of the below four divisions is rendered based on the button clicked by the user.*/}
-		{/*Q2 and Q6. Code to call Instance that draws Homepage. Homepage shows Visual Representation of free seats.*/}
-		{/*Q3. Code to call component that Displays Travellers.*/}
-		{/*Q4. Code to call the component that adds a traveller.*/}
-		{/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/
-    /**test1*/}
-    {selector === 1 && <Homepage freeSeats={this.state.freeSeats} />}
-    {selector === 2 && <Display travellers={this.state.travellers} />}
-    {selector === 3 &&  <Add bookTraveller={this.bookTraveller} getNextId={this.getNextId} />}
-    {selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
-	</div>
+        <div>
+          {/*Navigation bar with buttons to select different components*/}
+          <button onClick={() => this.setSelector(1)}>Homepage</button>
+          <button onClick={() => this.setSelector(2)}>Display Travellers</button>
+          <button onClick={() => this.setSelector(3)}>Add Traveller</button>
+          <button onClick={() => this.setSelector(4)}>Delete Traveller</button>
+        </div>
+        <div>
+          {/*Render the selected component based on the selector value*/}
+          {selector === 1 && <Homepage freeSeats={this.state.freeSeats} />}
+          {selector === 2 && <Display travellers={this.state.travellers} />}
+          {selector === 3 &&  <Add bookTraveller={this.bookTraveller} getNextId={this.getNextId} />}
+          {selector === 4 && <Delete deleteTraveller={this.deleteTraveller} />}
+        </div>
       </div>
     );
   }
